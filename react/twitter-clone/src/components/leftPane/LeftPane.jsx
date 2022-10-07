@@ -11,26 +11,30 @@ const LeftPane = () => {
                 {/* header에는 트위터 아이콘을 넣을 것. */}
                 <nav>
                     <NavLink to="/">
-                        Home
+                        <span>Home</span>
+                        {/* span으로 묶어줘야 스타일 지정 범위를 줄일 수 있다. */}
                     </NavLink>
                     <NavLink to="/explore">
-                        Explore
+                        <span>Explore</span>
                     </NavLink>
                     <NavLink to="/notification">
-                        Notification
+                        <span>Notification</span>
                     </NavLink>
                     <NavLink to="/messages">
-                        Messages
+                        <span>Messages</span>
                     </NavLink>
                     <NavLink to="/bookmarks">
-                        Bookmarks
+                        <span>Bookmarks</span>
                     </NavLink>
                     <NavLink to="/lists">
-                        Lists
+                        <span>Lists</span>
                     </NavLink>
                     <NavLink to="/profile">
-                        Profile
+                        <span>Profile</span>
                     </NavLink>
+                    <button className="more">
+                        <span>More</span>
+                    </button>
                 </nav>
                 {/* navlink를 사용하여 react twitter 앱 탐색하기. */}
                 {/* 내부에 웹 애플리케이션을 구축할 때 접근성을 고려해야 한다.

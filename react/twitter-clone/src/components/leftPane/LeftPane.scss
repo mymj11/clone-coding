@@ -4,3 +4,47 @@
     color: #fff;
     min-height: 100vh;
 }
+
+nav{
+    padding-left: 3.3em;
+}
+
+nav > *, button.more{
+    // display: block;
+    //한 줄씩 버튼 나열.
+    text-decoration: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.3em;
+    font-weight: 500;
+    width: 100%;
+    //전체 행을 덮을 수 있도록 버튼의 너비를 100%로 해야한다.
+    //버튼이 행의 중앙으로 오게된다.
+    //그래서 위치를 아래와 같이 조정했다.
+
+    span{
+        display: flex;
+        //위의 block 대신 적용하자.
+        align-items: center;
+        //버튼크기와 글씨 위치를 맞게 조정.
+        height: 2.4em;
+        width: fit-content;
+        padding: 0 0.7em;
+    }
+
+    &:hover span{
+        color: #1da1f2;
+        border-radius: 1.5em;
+        background: #192734;
+    }
+    //nav hover 또는 button.more hover와 같은 것.
+    //scss의 장점은 class를 쉽게 중첩할 수 있다.
+    //마우스 커서를 버튼 위에 두면 회색배경과 함께 글자색이 흰색에서 하늘색으로 바뀐다.
+    //이 버튼커서 배경색이 전체 칸을 덮지 않게 하고 마우스 커서를 글씨 위가 아니라 옆에 빈 곳을 둬도 선택되도록 할 것이다.
+}
+
+button{
+    background: unset;
+    border: unset;
+    //배경과 테두리 기본 스타일 설정 해제.
+}
