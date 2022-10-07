@@ -1,38 +1,22 @@
-.App {
-  text-align: center;
+// @font-face {font-family: "Segoe UI"; 
+//             src: url("//db.onlinewebfonts.com/t/623c7118249e082fe87a78e08506cb4b.eot"); 
+//             src: url("//db.onlinewebfonts.com/t/623c7118249e082fe87a78e08506cb4b.eot?#iefix") format("embedded-opentype"), 
+//                   url("//db.onlinewebfonts.com/t/623c7118249e082fe87a78e08506cb4b.woff2") format("woff2"), 
+//                   url("//db.onlinewebfonts.com/t/623c7118249e082fe87a78e08506cb4b.woff") format("woff"), 
+//                   url("//db.onlinewebfonts.com/t/623c7118249e082fe87a78e08506cb4b.ttf") format("truetype"), 
+//                   url("//db.onlinewebfonts.com/t/623c7118249e082fe87a78e08506cb4b.svg#Segoe UI") format("svg"); }
+
+*{
+  margin: 0;
+  //여백을 0으로
+  padding: 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.app{
+  font-family: 'Segoe UI', 'Times New Roman', Times, serif;
+  display: grid;
+  grid-template-columns: 1.1fr 2.1fr 1.4fr;
+  //오른쪽 창이 더 작다.
+  background: #171717;
+  color: #fff;
 }
