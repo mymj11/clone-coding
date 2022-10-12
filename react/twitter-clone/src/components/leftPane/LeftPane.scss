@@ -3,10 +3,28 @@
     background-color: #15202b;
     color: #fff;
     min-height: 100vh;
+
+.container{
+    position: fixed;
 }
+
+header svg{
+    height: 1.9em;
+    margin-top: 0.7em;
+    margin-bottom: 0.7em;
+    margin-left: 4em;
+}
+//아이콘과 왼쪽 목록 정렬
 
 nav{
     padding-left: 3.3em;
+}
+
+nav svg{
+    height: 1.3em;
+    //높이를 지정해주니 안 보였던 아이콘이 보인다.
+    margin-right: 0.9em;
+    //여백을 추가해서 아이콘과 글씨 사이를 띄운다.
 }
 
 nav > *, button.more{
@@ -27,7 +45,7 @@ nav > *, button.more{
         //위의 block 대신 적용하자.
         align-items: center;
         //버튼크기와 글씨 위치를 맞게 조정.
-        height: 2.4em;
+        height: 2.7em;
         width: fit-content;
         padding: 0 0.7em;
     }
@@ -43,8 +61,76 @@ nav > *, button.more{
     //이 버튼커서 배경색이 전체 칸을 덮지 않게 하고 마우스 커서를 글씨 위가 아니라 옆에 빈 곳을 둬도 선택되도록 할 것이다.
 }
 
+nav .selected{
+    color: #1da1f2;
+    //색상이 블루로 바뀐다.
+}
+
 button{
     background: unset;
     border: unset;
     //배경과 테두리 기본 스타일 설정 해제.
 }
+
+button.tweet{
+    display: block;
+    background: #1da1f2;
+    color: #fff;
+    width: 14em;
+    height: 3em;
+    border-radius: 1.5em;
+    font-size: 1em;
+    margin-top: 0.5em;
+    margin-left: 3.7em;
+    cursor: pointer;
+
+    //클래스 내부에 클래스를 가질 수 있다.
+    &:hover{
+        background: #0f90e5;
+    }
+    //마우스 커서를 가져놓았을 때 좀 더 짙은 블루로 바뀐다.
+}
+
+//바닥글
+footer{
+    position: fixed;
+    bottom: 1.5em;
+    margin-left: 0.5em;
+
+    button.account{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center; //항목 중앙 정렬
+        color: #fff;
+        font-size: 1em; //사이즈 1올림
+    }
+    .photo{
+        border-radius: 100%;
+        // height: 2.5em;
+        // width: 2.5em;
+        height: 3.5em;
+        width: 3.5em;
+        //사진 넣는 곳 크기
+        background: #192734;
+        margin-left: 3.5em;
+        
+        img{
+            width: 3.5em;
+            // width: 100%;
+            // height: 100%;
+            //사진 크기
+            object-fit: cover;
+            border-radius: 100%;
+            //100%로 하면 원 모양이 된다.
+        }
+    }
+    .name{
+        font-weight: 700;
+    }
+
+    .username{
+        color: #8899a6;
+    }
+}
+}
+//전체 모든 항목이 left-pane에 들어가 있다.

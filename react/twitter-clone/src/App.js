@@ -1,5 +1,7 @@
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import { LeftPane } from './components';
+import {RightPane} from './components';
+//components의 index.js에서도  export를 해줘야 한다. 왜일까?
 import './App.scss';
 import Home from './components/Home/Home';
 import Explore from './components/Explore/Explore';
@@ -28,7 +30,10 @@ const App = () => {
       </Routes>
       </div>
       {/* 이제는 Switch를 쓰지 않고 Routes를 쓴다. */}
-      <div className="right-pane">Right Pane</div>
+
+      <RightPane />
+      <div className="right-pane">Right Pane
+      </div>
     </div>
     </BrowserRouter>
   );

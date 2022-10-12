@@ -1,0 +1,27 @@
+.right-pane{
+
+    //Search : input창, 검색 아이콘 포함된 검색창
+    .Search{
+        display: flex;
+        align-items: center;
+        margin-bottom: 2em;
+        margin-top: 2em;
+        border-radius: 100px;
+        border: 1px solid white; //테두리
+
+        span svg{
+            width: 2em;
+            height: 2em;
+            margin-right: 0.5em;
+            //아이콘과 검색창 사이 간격 두기
+            padding: 0.5em;
+        }
+
+        .stxt{
+            padding: 10px;
+            width: 70%;
+            color: white;
+        }
+    }
+    //아이콘 주소로 불러왔기 떄문에 스타일을 지정해줄 때 svg를 붙여줘야 한다.
+}
