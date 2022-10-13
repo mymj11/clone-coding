@@ -32,7 +32,7 @@ const App = () => {
       {/* 이제는 Switch를 쓰지 않고 Routes를 쓴다. */}
 
       <RightPane />
-      <div className="right-pane">Right Pane
+      <div className="right-pane">
       </div>
     </div>
     </BrowserRouter>

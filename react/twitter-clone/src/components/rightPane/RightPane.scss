@@ -7,11 +7,13 @@
         margin-bottom: 2em;
         margin-top: 2em;
         border-radius: 100px;
-        border: 1px solid white; //테두리
+        // border: 1px solid white; //테두리
+        background-color: rgb(36,51,64);
+        //둥근 검색창 배경색
 
         span svg{
-            width: 2em;
-            height: 2em;
+            width: 1.5em;
+            height: 1.5em;
             margin-right: 0.5em;
             //아이콘과 검색창 사이 간격 두기
             padding: 0.5em;
@@ -20,8 +22,35 @@
         .stxt{
             padding: 10px;
             width: 70%;
-            color: white;
+            background-color: rgb(36,51,64);
+            //둥근 검색창 안의 input창 배경색
+            // background-color: #15202b;
+            //iput창 배경을 투명으로 하고 싶다면 배경색을 transparent로 지정해주면 된다.
+            //근데 해당 박스 색이 아닌 배경색과 같게 하고 싶다면 배경색으로 주면 된다.
+            color: #fff;
+            //커서와 글자색이 흰색으로 바뀜
+            border: 0;
+            //input창 자체의 테두리 없애기
+            font-size: small;
         }
+        input:focus{
+            outline: none;
+            //none 대신 0으로 해도 된다.
+        }
+        //iput창의 포커스 테두리 없애기
+        //그럼 더 이상 커서를 둬도 테두리가 생기지 않는다.
     }
     //아이콘 주소로 불러왔기 떄문에 스타일을 지정해줄 때 svg를 붙여줘야 한다.
+
+    // .Search:focus-within{
+    //     border-color: #1da1f2;
+    // }
+
+    // .Search:focus-within span svg{
+    //     color: #1da1f2;
+    // }
+
+    // .Search:focus-within .Search_autocomplete{
+    //     display: block;
+    // }
 }
