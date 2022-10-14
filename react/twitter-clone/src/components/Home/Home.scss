@@ -1,4 +1,28 @@
 .home{
-    background: #171717;
+    background-color: #182533;
     color: #fff;
+    flex: 0.4;
+    // border-right: 1px solid #1da1f2;
+    min-width: fit-content;
+    overflow-y: scroll;
+    height: 100%;
+    //세로 스크롤을 설정했는데 홈 높이가 작게 지정되어 있어서 짧게 보였다.
+    //그래서 높이를 100%로 줬더니 전체 세로 스크롤이 생겼다.
+}
+
+.home::--webkit-scrollbar{
+    display: none;
+}
+
+.home{
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.header{
+    position: sticky;
+    top:0;
+    background-color: #15202b;
+    z-index: 100;
+    padding: 15px 20px;
 }

@@ -1,0 +1,72 @@
+.tweetBox{
+    padding-bottom: 10px;
+    border-bottom: 8px solid #1da1f2;
+    padding-right: 10px;
+}
+
+.tweetBox > form{
+    display: flex;
+    flex-direction: column;
+}
+
+.tweetBox_input,
+.tweetBox_imageinput{
+    padding: 20px;
+    display: flex;
+}
+.tweetBox_imageinput > input {
+    margin-left: 75px;
+    font-size: 20px;
+    width: 100%;
+}
+
+.tweetBox_input > input{
+    flex: 1;
+    margin-left: 20px;
+    font-size: 20px;
+    border: none;
+    outline: none;
+}
+
+.tweetbutton{
+    display: block;
+    background: #1da1f2;
+    color: #fff;
+    width: 80px;
+    height: 40px;
+    border-radius: 1.5em;
+    font-size: 1em;
+    margin-top: 0.5em;
+    margin-left: auto;
+    //margin-left를 auto로 하니 우측정렬이 된다.
+    border: none;
+    cursor: pointer;
+
+    &:hover{
+        background: #0f90e5;
+    }
+}
+
+img{
+    width: 3.5em;
+    object-fit: cover;
+    border-radius: 100%;
+}
+
+input{
+    padding: 10px;
+    // width: 70%;
+    background: rgb(36,51,64);
+    color: gray;
+    border: 0;
+    outline: none;
+    border-radius: 10px;
+
+    &:focus-within{
+    outline: 2px solid #1da1f2;
+    color: #fff;
+    }
+}
+//input창 두 개 같이 적용.
+
+//화면크기를 조정할 때 input창 두 개가 같이 움직인다.

@@ -1,5 +1,6 @@
 import React from 'react';
 import TweetBox from '../TweetBox/TweetBox';
+import Post from '../Post/Post';
 import './Home.scss';
 
 const Home = () => {
@@ -9,6 +10,7 @@ const Home = () => {
                 <h2>Home</h2>
             </div>
             <TweetBox />
+            <Post />
         </div>
     );
 }

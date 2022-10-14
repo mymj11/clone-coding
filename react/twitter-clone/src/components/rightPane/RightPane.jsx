@@ -16,7 +16,7 @@ const RightPane = () => {
                 <span>{search}</span>
                 {/* 아이콘을 화면에 보이게 하려면 위의 import icon을 활성화 시키려면
                  import에서 끝내는 것이 아니라 {해당 아이콘 이름}까지 입력해줘야 한다. */}
-                <input type="text" placeholder="Search Twitter" className="stxt" />
+                <input type="text" placeholder="Search Twitter" />
                 {/* <div className="search_autocomplelte">
                     <span>Try searching for people, topics, or keywords.</span>
                 </div> */}
