@@ -67,6 +67,19 @@ const wss = new WebSocket.Server({server});
 //서버를 전달(pass)해줄 거다.
 //http 서버 위에 webSocket 서버를 만들었다.
 
+const sockets = [];
+//array
+//fake database를 만들어 줄 거다.
+//누군가 우리 서버에 연결하면, 그 connection을 이 sockets에 넣을 거다.
+//socket이 2개가 생긴다. //const sockets = [1,2];
+//이렇게 하면 받은 메시지를 다른 모든 socket에 전달해 줄 수 있다.
+//brave가 연결되면 brave의 socket을 가져와서 [brave] 여기에 넣어 줄거다.
+//그리고 firefox가 연결되면 그 socket을 넣어 줄거다. //[brave, firefox]
+//이제 아래 wss.on에서 brave에서 메시지를 받으면,
+//받은 메시지를 sockets에 있는 모든 곳에 전달해 줄 수 있다.
+//firefox에서 메시지를 받았을 때, 나는 firefox와 brave 모두에게 메시지를 전달해주는 거다.
+//추후에 이 function은 바꿀 거다. 나 스스로한테 메시지를 보낼 필요가 없어서.
+
 
 // function handleConnection(socket){
 //     console.log(socket);
@@ -88,9 +101,14 @@ const wss = new WebSocket.Server({server});
 //connection이 생기면 여기 socket에서 누가 연결했는지 알 수 있다.
 //자바스크립트는 방금 연결된 socket을 넣어줄 것이다. 여기서는 브라우저가 방금 연결되었다.
 //이제 브라우저마다 연결된 socket에서 이벤트를 listen할 수 있다.
-//wss는 서버 전체를 위한 것.
+//wss는 서버 전체를 위한 것. websocket API?
+//wss.on 코드는 두 번 작동한다. brave와 연결이 될 때 작동하고 firefox와 연결이 될 때도 작동한다.
+//같은 코드가 두 개의 브라우저와 연결된 것. 하지만 몇 명이 연결되었는지는 모른다. 그래서 fake database를 만들어 줄 거다.
 wss.on("connection", (socket) => {
-    //console.log(socket);
+    sockets.push(socket);
+    //누군가 우리 서버에 연결하면, 그 connection을 이 socket에 넣을 거다.
+    //firefox가 연결될 때, firefox를 위 array에 넣어준다는 것.
+    //그리고 brave가 연결될 때는 brave를 array에 넣어 줄거다. //그럼 socket 2개가 생기는 것.
     console.log("Connected to Browser ✔");
     //브라우저가 연결되면, 무언가를 console.log하고
 
@@ -107,28 +125,63 @@ wss.on("connection", (socket) => {
     //socket.on("message", onSocketMessage);
 
     socket.on("message", (message) => {
+        sockets.forEach((aSocket) => aSocket.send(message.toString('UTF8')));
+        //여기 aSocket은 socket과 다른 것. 
+        //각 부라우저를 aSocket으로 표시하고 메시지를 보낸다는 의미.
+        //이제 연결된 모든 socket들에 접근할 수 있다.
+        //메시지를 보낼 때, 모두에게 보내고 있다.
+
+        //socket.send(message.toString('utf8'));
+        //socket이 메시지를 보냈다.
+        //기본적으로 user로부터 메시지를 받아서 다시 돌려주고 있다. 즉, 혼자 대화하는 것.
+        //백엔으로부터 엄청 빠르게 메시지를 받은 것을 개발자 도구 콘솔창에서 확인할 수 있다.
+        //방금 내가 적은 것을 받은 거다. hi라고 하면 새 메시지로 hi를 받는다.
+        //메시지를 보낸 socket에 다시 메시지를 보내는 대신,
+
         // console.log(message); //이렇게 하니까 Buffer가 나와서 
-        console.log(message.toString('UTF8'));
+        //console.log(message.toString('UTF8'));
     });
-    //브라우저(프엔?)가 서버(백엔?)에 메시지를 보냈을 때를 위한 listener도 등록했다.
-    //특정 socket에서 메시지를 기다리고 있다. socket.on();에서 socket이 특정 socket이다.
-    //그래서 이 특정 socket에 event listener를 등록했다.
-    //서버에 event listener를 등록하지 않았다.
-    //왜냐하면 이 event listener은 백엔과 연결한 각 브라우저를 위한 거니까.
-    //socket.on message는 특정 socket에서 메시지를 받았을 때 발생.
-    socket.send("hello!!!");
-    //서버가 브라우저에 메시지를 보내도록 만들었다.
-
-    //여기서 event listener를 추가해줬다. 그리고 메시지를 브라우저로 전달했다.
-    //그리고 브라우저(app.js)에서는 백엔과 connection을 열어주고 있다.
-    //그리고 다시, app.js에 event listener을 등록했다.
-
-    //새로운 브라우저가 내 서버에 들어오면, 같은 코드를 실행시켜 줄 것이다.
 });
 
 server.listen(3000, handleListen);
 //이제 할 것은, server.listen 할 수 있다. port는 아무거나.
 //이제 handListen을 사용할 수 있다.
+
+//예를 들어, firefox로부터 메시지를 받으면 모든 socket을 거쳐서 firefox가 보낸 메시지를 보낼 거다.
+//하나의 서버와 두 개의 브라우저를 사용하고 있기 때문에
+//두 개의 브라우저에 각각 서버와 연결되었다는 메시지가 콘솔창에 뜨고
+//vs 터미널에는 브라우저와 연결되었다는 메시지 2개를 확인할 수 있다.
+
+//난 brave에서 메시지를 보낼 거다. 그러면 그 메시지를 firefox console에서 볼 수 있고
+//같은 메시지를 chrome console에서도 확인할 수 있을 거다.
+//brave가 연결되면, brave를 sockets array에 넣어 줄거다.
+//firefox가 연결이 되면, firefox를 sockets array에 넣어 줄거다.
+//그리고 누군가 메시지를 보내면, 모든 socket을 거치기 때문에 중복이 생긴다.(나중에 고치자.)
+//brave에서 메시지를 보냈더니 brave와 firefox 둘 다 콘솔창에 내가 보낸 메시지가 뜬다.
+//마찬가지로 firefox에서 메시지를 보냈더니 brave와 firefox 둘 다 콘솔창에 내가 보낸 메시지가 뜬다.
+//여기서 해결할 점은 내가 보낸 메시지를 다시 받고 있는 것.
+
+//다음에는 메시지를 화면에 보여주게 만들어 보자. user와 nickname을 선택할 수 있게도 해보자.
+//그래서 socket에 nickname을 지정하도록 할 거다.
+
+//서로 다른 브라우저는 서로 메시지를 주고받지 못한다.
+//누가 지금 연결되어 있는지 알아야 한다.
+
+//브라우저(프엔?)가 서버(백엔?)에 메시지를 보냈을 때를 위한 listener도 등록했다.
+//특정 socket에서 메시지를 기다리고 있다. socket.on();에서 socket이 특정 socket이다.
+//그래서 이 특정 socket에 event listener를 등록했다.
+//서버에 event listener를 등록하지 않았다.
+//왜냐하면 이 event listener은 백엔과 연결한 각 브라우저를 위한 거니까.
+//socket.on message는 특정 socket에서 메시지를 받았을 때 발생.
+
+//socket.send("hello!!!");
+//서버가 브라우저에 메시지를 보내도록 만들었다.
+
+//여기서 event listener를 추가해줬다. 그리고 메시지를 브라우저로 전달했다.
+//그리고 브라우저(app.js)에서는 백엔과 connection을 열어주고 있다.
+//그리고 다시, app.js에 event listener을 등록했다.
+
+//새로운 브라우저가 내 서버에 들어오면, 같은 코드를 실행시켜 줄 것이다.
 
 //내 http 서버에 access하려는 것이다.
 //그래서 http 서버 위에 웹소켓 서버를 만들 수 있도록 한 거다.

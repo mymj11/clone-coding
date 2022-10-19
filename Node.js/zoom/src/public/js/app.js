@@ -1,6 +1,7 @@
+const messageList = document.querySelector("ul");
+const messageForm = document.querySelector("form");
 //브라우저에서는, 여기 이 백엔에 연결했고?
 //프엔에서 백엔으로 연결을 만들어주고
-
 const socket = new WebSocket(`ws://${window.location.host}`);
 //새로고침할 때 이게 작동한다. 그러면 모든 addEventListener가 설정이 될 것이다.
 //이제 서버로 접속할 수 있고, 폰으로도 가능하다.
@@ -33,6 +34,17 @@ socket.addEventListener("open", () => {
 //서버와 연결되었을 때 발생.
 
 socket.addEventListener("message", (message) => {
+    const li = document.createElement("li");
+    //메시지를 스크린에 보여주는 function을 만들어 보자.
+    //새로운 메시지를 받으면, 먼저 새로운 li를 만들 것이다.
+    li.innerText = message.data;
+    //다음에는 messsage.data를 li 안에 넣어 주자.
+    messageList.append(li);
+    //그 다음, li를 messageList 안에 넣어 주자.
+    //이렇게 해주면 메시지를 화면에 보여줄 수 있다.
+    //firefox에서 메시지를 보냈더니 firefox 화면과 brave 화면에 다 메시지가 보인다.
+    //form을 만들어서 nickname을 정할 수 있도록 해주자.(html파일에서-home.pug)
+
     //console.log("Just got this: ", message.data, "from the server");
     console.log("New message: ", message.data);
 });
@@ -57,9 +69,31 @@ socket.addEventListener("close", () => {
 //서버와 연결이 끊어졌다고 써보자.
 //서버로부터 연결이 끊어졌을 때 발생.
 
-setTimeout(() => {
-    socket.send("hello from the browser!");
-}, 10000);
+function handleSubmit(event){
+    event.preventDefault();
+    const input = messageForm.querySelector("input");
+    //여기서 input을 가지고 올 건데 const input을 쓰고 form에서 input을 찾아오자.
+    socket.send(input.value);
+    //2번째 단계는 input.value를 출력하는 대신 socket.send()를 사용하자.
+    //프엔의 form에서 백엔으로 무언가를 보내고 있다.
+    input.value = "";
+    //input창에 메시지를 입력하고 send 버튼을 누르면 input창이 비워진다.
+    //그리고 모든 메시지는 백엔으로 가고 있다. vs 터미널에서 확인할 수 있다.
+
+    // console.log(input.value);
+    //여기서는 메시지의 내용이 될 input.value를 출력하자.
+}
+//이게 event를 준다는 것을 알고 있다.
+//input창에 hello를 하고 send 버튼을 눌렀더니(enter를 쳐도된다.) 콘솔창에 hello라고 뜬다.
+
+//이제 백엔에서 메시지를 받으면, 같은 메시지를 다시 전송해주고 싶다.
+
+messageForm.addEventListener("submit", handleSubmit);
+//event listener를 messageForm에 추가해 줄 거다.
+
+// setTimeout(() => {
+//     socket.send("hello from the browser!");
+// }, 10000);
 //이제 프엔에서 백엔으로 메시지를 보내보자.
 //즉시 실행되길 원하지 않기 때문에 timeout을 사용하자.
 //메시지를 보내기까지 10초를 기다리자.
@@ -111,5 +145,15 @@ setTimeout(() => {
 //html 파일은 home.pug
 //html 파일에서 form을 만들어 줄거다.
 //아주 큰 버튼이 메시지를 전송하게 만들어보자.
-//우리가 보게될 메시지 리스트도 만들 것이다.
+//우리가 보게될 메시지 리스트도 만들 것이다.(ul) //메시지를 받을 때 채울거다.
+//form을 만들어서 nickname을 정할 수 있도록 해주자.(html파일에서-home.pug)
+//문제는 백엔드(server.js)로 닉네임을 보내야 한다는 것이다.
+//하지만, 백엔드는 메시지들을 구분하지 못한다.
+//왜냐하면 우리가 메시지를 보낼 때, 그냥 모두에게 보내고 있기 때문이다.
+//그래서 메시지를 구분하기 위해서 메시지 type을 만들어야 한다.
+//한가지 type은 message chat으로 하고 다른 한가지는 nickname으로 하자.
+//두 개의 form을 만들어 주자. 한 개는 nickname, 다른 한 개는 message
+//form이 2개가 있기 때문에 우선 id를 만들어줘야 한다.
+//그럼 app.js의 const messageList와 messageForm은 작동하지 않을 것이다.
+
 
