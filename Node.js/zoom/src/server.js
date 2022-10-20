@@ -1,8 +1,10 @@
 import http from "http";
-import SocketIO from "socket.io";
+import {Server} from "socket.io";
+//import SocketIO from "socket.io";
 // import WebSocket from "ws";
+import {instrument} from "@socket.io/admin-ui";
 import express from "express";
-import { emit } from "process";
+//import { emit } from "process";
 
 const app = express();
 //app 만들기
@@ -21,12 +23,14 @@ app.use("/public", express.static(__dirname + "/public"));
 
 //우리가 사용할 유일한 route 만들기
 //home으로 가면 request, response를 받고 res.render를 할 거다. //우리가 만든 home을 렌더하는 것.
-app.get("/", (req, res) => res.render("home"));
+app.get("/", (_, res) => res.render("home"));
+//app.get("/", (req, res) => res.render("home"));
 //home.pug를 render해주는 route handler를 만들었다. //우리 홈페이지로 이동 시 사용될 템플릿을 렌더해주는 것이다.
 //유저가 홈(/)으로 GET request를 보내면 template으로 반응한다.
 //http가 어떻게 생겼냐면 url을 선언하고, 유저가 url로 가면, req와 res를 받고, response를 보낸다.
 
-app.get("/*", (req, res) => res.redirect("/"));
+app.get("/*", (_, res) => res.redirect("/"));
+//app.get("/", (req, res) => res.render("home"));
 //유저가 어떤 페이지로 GET request를 보내도 redirect로 반응하도록 해뒀다.
 //app.get을 입력하고 여기서 유저가 어떤 url로 이동하던지 홈으로 돌려보내면 된다. 
 //왜냐하면 다른 url을 사용하지 않을 거니까. 다른 url은 전혀 사용하지 않고 홈만 사용할 것이다.
@@ -38,25 +42,124 @@ const httpServer = http.createServer(app);
 //express application으로부터 서버를 만들어보자. 이 서버에서 websocket을 만들 수 있다는 것이다.
 //app.listen 하기 전인데, 아직 서버에 access(접근)하지 못했었는데 이제 서버에 접근할 수 있다.
 
-const wsServer = SocketIO(httpServer);
+//const wsServer = SocketIO(httpServer);
 //const io = SocketIO(server);
 //server를 보내주는 io 서버를 만들자.(wsServer라고해도 됨)
 
+//socket.io server를 만들어주자.
+//url에서 localhost:3000에 엑세스할 거니까.
+//온라인 데모가 작동하는데 필요한 환경설정.
+//연결이 안 된다ㅠㅠ
+const wsServer = new Server(httpServer, {
+    cors: {
+        origin: ["http://admin.socket.io"],
+        credentials: true,
+    },
+});
+
+instrument(wsServer, {
+    auth: false
+});
+
+function publicRooms(){
+    const {
+        sockets: {
+            adapter: {sids, rooms},
+        },
+    } = wsServer;
+    //socket안으로 들어가서 adapter를 갖고
+    //sids와 rooms를 wsServer안에서 가져오자. 
+    const publicRooms = [];
+    //public rooms list를 만들자.
+    rooms.forEach((_, key) => {
+        if(sids.get(key) === undefined){
+            publicRooms.push(key);
+        }
+        //이게 undefined와 같다면
+        //value는 신경쓰지 않는다. key가 중요하다.
+    });
+    return publicRooms;
+}
+//public rooms을 주는 function을 생성해주자.
+//wsServer.sockets.adapter로부터 sids와 rooms를 가져와서 브라우저에서 실행했던 거랑 같은 코드를 실행시켰다.
+
+function countRoom(roomName){
+    return wsServer.sockets.adapter.rooms.get(roomName)?.size;
+    //roomName을 가져오고 이게 set인 걸 아니까 size를 해주자.
+    //우리 방이 얼마나 큰지 계산하는 것.
+}
+//welcome event를 보낼 때 countRoom의 결과값도 같이 보낸다.
+
 wsServer.on("connection", (socket) => {
+    //wsServer.socketsJoin("announcement");
+    //예를 들어, 모든 socket을 어떤 방에 들어가게끔 하고 싶다면 wsServer를 쓰고,
+    //socket이 연결되었을 때 모든 socket이 announcement 방에 입장하게 만드는 것.
+    socket["nickname"] = "Anon";
     socket.onAny((event) => {
-        console.log(`Socket Event:${event}`);
+        //console.log(wsServer.sockets.adapter);
+        console.log(`Socket Event: ${event}`);
     });
     socket.on("enter_room", (roomName, done) => {
         socket.join(roomName);
         //roomName으로 방에 참가하자.
         done();
         //프엔의 function showRoom을 서버에서 실행시키자.
-        socket.to(roomName).emit("welcome");
+        socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
+        //이거는 메시지를 하나의 socket에만 보내고
         //참가했다는 것을 나를 제외한 방에 있는 모든 사람들에게 알려주자.
         //event를 emit해주자. event의 이름은 마음대로.
         //welcome event를 나를 제외한 roomName에 있는 모든 사람들에게 emit한 것이다.
+        //socket.nickname을 추가함으로써 "welcome"은 우리에게 무언가를 줄거다.
+        wsServer.sockets.emit("room _change", publicRooms());
+        //모두에게 room이 변경됐다고 알려준다.
+        //이거는 메시지를 모든 socket에 보내준다.
+        //room_change라는 event를 보내자.
+        //연결된 모든 socket에게 내가 방에 입장할 때, 누군가가 방에 입장할 때 
+        //어플리케이션 안에 있는 모든 방에 공지를 내보내자.
+        //event의 payload는 publicRooms 함수의 결과로 해주자. 서버 안에 있는 모든 방의 array를 준다.
     });
+
+     //새로운 방이 생기면 생겼다고 콘솔창에 ["방이름"] 뜬다.
+     //누군가 입장했습니다.
+
+    socket.on("disconnecting", () => {
+        socket.rooms.forEach((room) => 
+        socket.to(room).emit("bye", socket.nickname, countRoom(room)-1)
+        );
+    });
+    //클라이언트가 종료 메시지를 모두에게 보낸 다음에 
+    //중복되는 요소가 없는 array같은 set이어서 iterable(반복) 가능. 그래서 forEach를 쓸 수 있다.
+    //rooms에 forEach를 써서 종료 event를 보낼 거다. //여기서 참여하고 있는 방 이름과 id를 볼 수 있다.
+    //event인 disconnectiong은 disconnect와 다르다. 아직 서버가 끊긴 건 아니다. 
+    //서버 끊기 전 이 방 안에 있는 모두에게 마지막 인사 메시지를 보낼 수 있다 //"bye" event를 emit해주면 된다.
+    //퇴장하는 room을 알려주자. 방을 퇴장하기 직전이다. 그래서 아직 room 이름에 접근할 수 있다. 
+    //아직 방을 떠나지 않았기 때문에 우리도 포함되서 계산될거다. 그래서 -1을 해주자.
+    socket.on("disconnect", () => {
+        wsServer.sockets.emit("room_change", publicRooms());
+    });
+    socket.on("new_message", (msg, room, done) => {
+        socket.to(room).emit("new_message", `${socket.nickname}: ${msg}`);
+        //누군가 message를 보내면 이렇게 message를 보내는 대신 socket.nickname과 msg를 넣어줄 수 있다.
+        done();
+        //callback을 사용. 이건 기본적으로 백엔드에서 코드를 시작할 수 있게 해준다.
+        //하지만 이 코드는 프엔에서 실행된다.
+    });
+    socket.on("nickname", (nickname) => (socket["nickname"] = nickname));
+    //nickname을 받고 nickname을 socket에 더해줄거다.
+    //nickname event가 발생하면 nickname을 가져와서 socket에 저장하자.
+
+    //방을 나간 사람 이름을 보낼 수 있다.
 });
+    //message와 done function을 받을 거다.
+    //message를 보내고 있는 것은 맞지만 어디로 보내는지는 모른다.
+    //그래서 argument를 하나 더 보내줘야 한다. 여기에 있는 방 이름.
+    //payload는 내가 방금 받은 메시지가 될 것이다. //그게 완료되면 done function을 호출할 거다.
+    //room이 프엔에서 받은 argument 중 input의 value다.
+    //이 done() 코드는 백엔드에서 실행하지 않는다. done을 호출했을 때 프엔에서 코드를 실행시킬 거다.
+
+const handleListen = () => console.log(`Listening on http://localhost:3000`);
+httpServer.listen(3000, handleListen);
+
 //방에 참가하면 done() function을 호출한다.
 //done()은 프엔에 있는 showRoom()을 실행한다.
 //그러면 event를 방금 참가한 방 안에 있는 모든 사람들에게 emit해주는 거다.
@@ -84,11 +187,6 @@ wsServer.on("connection", (socket) => {
 //서버에서 done이라는 function을 호출하는 것, 서버가 이 function을 실행시키면 이 funtion은 프엔에서 실행될 것이다.
 //서버는 백엔에서 function을 호출하지만, function은 프엔에서 실행되는 것이다.
 //프엔에서 object를 보내고 백엔에서 console.log하면 object를 받을 수 있다.
-
-const handleListen = () => console.log(`Listening on http://localhost:3000`);
-httpServer.listen(3000, handleListen);
-
-
 
 
 
